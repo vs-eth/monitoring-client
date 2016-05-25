@@ -1,0 +1,67 @@
+---
+  - name: Add debmon repository
+    apt_repository: repo='deb http://debmon.org/debmon debmon-jessie main' state=present
+    register: repochanged
+
+  - name: Add debmon repository key
+    apt_key: url=http://debmon.org/debmon/repo.key state=present
+
+  - name: Explicitly refresh apt cache
+    apt: update_cache=yes
+    when: repochanged.changed
+
+  - name: Install icinga
+    apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
+    with_items:
+      - icinga2
+      - sysstat
+
+  # Per default the socket is owned by nagios:www-run
+  - name: Enable icinga modules
+    command: icinga2 feature enable {{ item }} creates=/etc/icinga2/features-enabled/{{ item }}.conf
+    notify: restart icinga
+    with_items:
+      - api
+      - checker
+      - mainlog
+
+  - name: Disable icinga modules
+    command: icinga2 feature disable {{ item }} removes=/etc/icinga2/features-enabled/{{ item }}.conf
+    notify: restart icinga
+    with_items:
+      - graphite
+      - ido-mysql
+      - perfdata
+      - notification
+
+  - name: Concat CA and CRL
+    assemble: src=/etc/icinga2/pki/ca dest=/etc/icinga2/pki/ca-mag.crt
+
+  - name: Create icinga config files
+    template: src={{item }}.j2 dest=/etc/icinga2/conf.d/{{item }} owner=root group=root mode=0644
+    notify: restart icinga
+    with_items:
+      - templates.conf
+      - services.conf
+      - commands.conf
+
+  - name: Create icinga main configs
+    template: src={{ item }}.j2 dest=/etc/icinga2/{{ item }} owner=root group=root mode=0644
+    notify: restart icinga
+    with_items:
+      - icinga2.conf
+      - constants.conf
+      - zones.conf
+
+  - name: Configure icinga features
+    template: src={{ item }}.j2 dest=/etc/icinga2/features-available/{{ item }} owner=root group=nagios mode=0640
+    notify: restart icinga
+    with_items:
+      - api.conf
+
+  - name: Manually install a few checks from contrib
+    copy: src="{{ item }}" dest="/usr/lib/nagios/plugins/{{ item }}" owner=root group=root mode=0755
+    notify: restart icinga
+    with_items:
+      - check_iostat
+      - check_mem.pl

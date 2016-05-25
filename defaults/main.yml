@@ -1,0 +1,3 @@
+---
+icinga_master_fqdn: debian-vm.m.njsm.de
+icinga_master_ip: 192.168.122.28
