@@ -52,6 +52,7 @@
       - templates.conf
       - services.conf
       - commands.conf
+      - hosts.conf
 
   - name: Create icinga main configs
     template: src={{ item }}.j2 dest=/etc/icinga2/{{ item }} owner=root group=root mode=0644
