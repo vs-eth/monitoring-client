@@ -1,22 +1,4 @@
 ---
-  - name: Add debmon repository
-    apt_repository: repo='deb http://debmon.org/debmon debmon-jessie main' state=present
-    register: repochanged
-
-  - name: Add debmon repository key
-    apt_key: url=http://debmon.org/debmon/repo.key state=present
-
-  - name: Explicitly refresh apt cache
-    apt: update_cache=yes
-    when: repochanged.changed
-
-  - name: Install icinga
-    apt: name={{ item }} state=present update_cache=yes cache_valid_time=1800
-    with_items:
-      - icinga2
-      - sysstat
-      - bc
-
   # Per default the socket is owned by nagios:www-run
   - name: Enable icinga modules
     command: icinga2 feature enable {{ item }} creates=/etc/icinga2/features-enabled/{{ item }}.conf
@@ -37,22 +19,13 @@
 
   - name: Concat CA and CRL
     assemble: src=/etc/icinga2/pki/ca dest=/etc/icinga2/pki/ca-mag.crt
-
-  - name: Enable default services
-    set_fact:
-      icinga_checks: ["apt", "icinga", "load", "mem", "procs", "users"]
-
-  - name: Detect checks to use for this host
-    include: detect-stuff.yml
+    changed_when: False
 
   - name: Create icinga config files
     template: src={{item }}.j2 dest=/etc/icinga2/conf.d/{{item }} owner=root group=root mode=0644
     notify: restart icinga
     with_items:
       - templates.conf
-      - services.conf
-      - commands.conf
-      - hosts.conf
 
   - name: Create icinga main configs
     template: src={{ item }}.j2 dest=/etc/icinga2/{{ item }} owner=root group=root mode=0644
@@ -67,17 +40,3 @@
     notify: restart icinga
     with_items:
       - api.conf
-
-  - name: Manually install a few checks from contrib
-    copy: src="{{ item }}" dest="/usr/lib/nagios/plugins/{{ item }}" owner=root group=root mode=0755
-    notify: restart icinga
-    with_items:
-      - check_iostat
-      - check_mem.pl
-      - check_raid.pl
-
-  - name: Create facts.d directory
-    file: dest=/etc/ansible/facts.d state=directory owner=root group=root
-
-  - name: Save list of enabled checks
-    copy: content={{ icinga_checks }} dest=/etc/ansible/facts.d/icinga_checks.fact
