@@ -39,3 +39,8 @@ object NotificationCommand "mail-service-notification" {
     USEREMAIL = "$user.email$"
   }
 }
+
+object CheckCommand "raid" {
+  import "plugin-check-command"
+  command = [PluginDir + "/check_raid.pl" ]
+}

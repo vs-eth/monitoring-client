@@ -1,3 +1,4 @@
 ---
 icinga_master_fqdn: mon.sos.ethz.ch
 icinga_master_ip: 82.130.108.198
+icinga_valid_mounts: ["/", "/boot", "/boot/efi"]

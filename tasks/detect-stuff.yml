@@ -1,0 +1,28 @@
+---
+  - name: (mdadm) Detect mdadm raids
+    shell: cat /proc/mdstat | grep active | awk '{print $1}'
+    register: mdout
+    failed_when: False
+    changed_when: False
+
+  - name: (mdadm) Append mdadm raids to list of checks
+    set_fact: icinga_checks="{{icinga_checks}} + ['raid']"
+    when: mdout.rc == 0 and mdout.stdout != ""
+
+  - name: (disk) Detect mounted volumes
+    set_fact:
+      disk_item: "disk {{ item.device }}"
+    with_items: "{{ ansible_mounts|attr_in('mount', icinga_valid_mounts) }}"
+    register: diskappend
+
+  - name: (disk) Append detected mountpoints to list of checks
+    set_fact: icinga_checks="{{icinga_checks}} + {{ diskappend.results | map(attribute='ansible_facts.disk_item') | list }}"
+
+  - name: (iostat) Enumerate physical disks in this system
+    set_fact:
+      disk_item: "iostat {{ item }}"
+    with_items: "{{ ansible_devices.keys()|matching('[sva]d[a-z]') }}"
+    register: pdiskappend
+
+  - name: (iostat) Append detected disks to list of checks
+    set_fact: icinga_checks='{{icinga_checks}} + {{ pdiskappend.results | map(attribute="ansible_facts.disk_item") | list }}'

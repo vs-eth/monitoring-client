@@ -15,6 +15,7 @@
     with_items:
       - icinga2
       - sysstat
+      - bc
 
   # Per default the socket is owned by nagios:www-run
   - name: Enable icinga modules
@@ -36,6 +37,13 @@
 
   - name: Concat CA and CRL
     assemble: src=/etc/icinga2/pki/ca dest=/etc/icinga2/pki/ca-mag.crt
+
+  - name: Enable default services
+    set_fact:
+      icinga_checks: ["apt", "icinga", "load", "mem", "procs", "users"]
+
+  - name: Detect checks to use for this host
+    include: detect-stuff.yml
 
   - name: Create icinga config files
     template: src={{item }}.j2 dest=/etc/icinga2/conf.d/{{item }} owner=root group=root mode=0644
@@ -65,3 +73,10 @@
     with_items:
       - check_iostat
       - check_mem.pl
+      - check_raid.pl
+
+  - name: Create facts.d directory
+    file: dest=/etc/ansible/facts.d state=directory owner=root group=root
+
+  - name: Save list of enabled checks
+    copy: content={{ icinga_checks }} dest=/etc/ansible/facts.d/icinga_checks.fact
