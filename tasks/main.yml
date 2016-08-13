@@ -18,7 +18,7 @@
       - notification
 
   - name: Concat CA and CRL
-    assemble: src=/etc/icinga2/pki/ca dest=/etc/icinga2/pki/ca-mag.crt
+    assemble: src=/etc/icinga2/pki/ca dest=/etc/icinga2/pki/ca-mag.crt owner=root group=root mode=0644
     changed_when: False
 
   - name: Create icinga config files
