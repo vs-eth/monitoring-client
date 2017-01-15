@@ -1,9 +1,11 @@
-object Endpoint "{{ icinga_master_fqdn }}" {
-    host = "{{ icinga_master_ip }}"
+{% for host in groups['mon-server'] %}
+object Endpoint "{{ host }}" {
+  host = "{{ host }}"
 }
+{% endfor %}
 
 object Zone "master" {
-    endpoints = [ "{{ icinga_master_fqdn }}" ]
+    endpoints = [ "{{ groups['mon-server']|join('", "') }}" ]
 }
 
 object Endpoint "{{ ansible_fqdn }}" {
