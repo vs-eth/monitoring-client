@@ -1,6 +1,6 @@
 ---
-  # Per default the socket is owned by nagios:www-run
   - name: Enable icinga modules
+    become: True
     command: icinga2 feature enable {{ item }} creates=/etc/icinga2/features-enabled/{{ item }}.conf
     notify: restart icinga
     with_items:
@@ -9,6 +9,7 @@
       - mainlog
 
   - name: Disable icinga modules
+    become: True
     command: icinga2 feature disable {{ item }} removes=/etc/icinga2/features-enabled/{{ item }}.conf
     notify: restart icinga
     with_items:
@@ -18,16 +19,19 @@
       - notification
 
   - name: Concat CA and CRL
+    become: True
     assemble: src=/etc/icinga2/pki/ca dest=/etc/icinga2/pki/ca-mag.crt owner=root group=root mode=0644
     changed_when: False
 
   - name: Create icinga config files
+    become: True
     template: src={{item }}.j2 dest=/etc/icinga2/conf.d/{{item }} owner=root group=root mode=0644
     notify: restart icinga
     with_items:
       - templates.conf
 
   - name: Create icinga main configs
+    become: True
     template: src={{ item }}.j2 dest=/etc/icinga2/{{ item }} owner=root group=root mode=0644
     notify: restart icinga
     with_items:
@@ -36,6 +40,7 @@
       - zones.conf
 
   - name: Configure icinga features
+    become: True
     template: src={{ item }}.j2 dest=/etc/icinga2/features-available/{{ item }} owner=root group=nagios mode=0640
     notify: restart icinga
     with_items:

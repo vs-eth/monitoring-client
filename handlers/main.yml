@@ -1,6 +1,8 @@
 ---
   - name: restart icinga
+    become: True
     service: name=icinga2 enabled=yes state=restarted
 
   - name: restart ceph-dash
+    become: True
     service: name=ceph-dash enabled=yes state=restarted
