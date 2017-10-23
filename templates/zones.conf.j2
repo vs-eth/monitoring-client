@@ -9,6 +9,7 @@ object Zone "master" {
 }
 
 object Endpoint "{{ ansible_fqdn }}" {
+    host = "{{ ansible_fqdn }}"
 }
 
 object Zone "{{ ansible_fqdn }}" {
