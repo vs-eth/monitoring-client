@@ -45,3 +45,18 @@
     notify: restart icinga
     with_items:
       - api.conf
+
+  - name: Ensure icinga2 is stopped
+    become: True
+    service: name=icinga2 state=stopped
+    when: icclean
+
+  - name: Remove icinga2 state
+    become: True
+    shell: rm -Rf /var/lib/icinga2/* ; rm -Rf /var/log/icinga2/*
+    when: icclean
+
+  - name: Start icinga2
+    become: True
+    service: name=icinga2 state=started
+    when: icclean

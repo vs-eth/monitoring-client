@@ -1,3 +1,5 @@
 ---
-#mon_icinga_master_fqdn: mon.sos.ethz.ch
-#mon_icinga_master_ip: 82.130.108.198
+# Clients buffer the zone updates they get from the master. If you change the config
+# substantially, you might need to kill this cache to get them to sync again, especially
+# when you do not have time sync set up correctly...
+icclean: False

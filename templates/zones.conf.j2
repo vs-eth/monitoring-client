@@ -1,3 +1,11 @@
+object Zone "global-templates" {
+  global = true
+}
+
+object Zone "director-global" {
+  global = true
+}
+
 {% for host in groups['mon-server'] %}
 object Endpoint "{{ host }}" {
   host = "{{ host }}"
