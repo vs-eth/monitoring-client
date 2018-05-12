@@ -18,11 +18,6 @@
       - perfdata
       - notification
 
-  - name: Concat CA and CRL
-    become: True
-    assemble: src=/etc/icinga2/pki/ca dest=/etc/icinga2/pki/ca-mag.crt owner=root group=root mode=0644
-    changed_when: False
-
   - name: Create icinga config files
     become: True
     template: src={{item }}.j2 dest=/etc/icinga2/conf.d/{{item }} owner=root group=root mode=0644
@@ -53,7 +48,7 @@
 
   - name: Remove icinga2 state
     become: True
-    shell: rm -Rf /var/lib/icinga2/* ; rm -Rf /var/log/icinga2/*
+    shell: rm -Rf /var/lib/icinga2/api ; rm -f /var/lib/icinga2/icinga2.state ; rm /var/lib/icinga2/modified-attributes.conf ; rm -Rf /var/log/icinga2/*
     when: icclean
 
   - name: Start icinga2
