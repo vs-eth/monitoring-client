@@ -1,4 +1,7 @@
 ---
+# Which port to listen on?
+mon_icinga_listen_port: 5665
+
 # Clients buffer the zone updates they get from the master. If you change the config
 # substantially, you might need to kill this cache to get them to sync again, especially
 # when you do not have time sync set up correctly...
