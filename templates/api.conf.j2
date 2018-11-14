@@ -5,4 +5,9 @@
 object ApiListener "api" {
   accept_config = true
   bind_port = {{ mon_icinga_listen_port|default(5665) }}
+{% if icversion.stdout is version('2.8', '<') %}
+  cert_path = CertDir + "/certs/{{ ansible_fqdn }}.crt"
+  key_path = CertDir + "/certs/{{ ansible_fqdn }}.key"
+  ca_path = CertDir + "/certs/ca.crt"
+{% endif %}
 }
