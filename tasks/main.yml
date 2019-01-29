@@ -3,6 +3,7 @@
     become: True
     shell: "icinga2 -V | sed -E 's/.*version: r([0-9.-]*)-1.*/\\1/g' | head -n1"
     register: icversion
+    check_mode: False
     changed_when: False
 
   - name: Enable icinga modules
