@@ -51,14 +51,14 @@
   - name: Ensure icinga2 is stopped
     become: True
     service: name=icinga2 state=stopped
-    when: icclean
+    when: icclean|bool
 
   - name: Remove icinga2 state
     become: True
     shell: rm -Rf /var/lib/icinga2/api ; rm -f /var/lib/icinga2/icinga2.state ; rm /var/lib/icinga2/modified-attributes.conf ; rm -Rf /var/log/icinga2/*
-    when: icclean
+    when: icclean|bool
 
   - name: Start icinga2
     become: True
     service: name=icinga2 state=started
-    when: icclean
+    when: icclean|bool
