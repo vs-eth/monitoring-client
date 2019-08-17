@@ -13,10 +13,13 @@ object Endpoint "{{ hostvars[host]['ansible_fqdn'] }}" {
 {% endfor %}
 
 object Zone "master" {
-    endpoints = [ {% for host in groups['mon_server'] %}
-                     "{{ hostvars[host]['ansible_fqdn'] }}"{% if not loop.last %},{% endif %}
-                  {% endfor %}
-                ]
+    endpoints = [
+{% for host in groups['mon_server'] %}
+      "{{ hostvars[host]['ansible_fqdn'] }}"{% if not loop.last %},
+{% endif %}
+{% endfor %}
+ 
+    ]
 }
 
 object Endpoint "{{ ansible_fqdn }}" {
