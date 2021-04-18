@@ -7,26 +7,26 @@ object Zone "director-global" {
 }
 
 {% for host in groups['mon_server'] %}
-object Endpoint "{{ hostvars[host]['ansible_fqdn'] }}" {
-  host = "{{ hostvars[host]['ansible_fqdn'] }}"
+object Endpoint "{{ hostvars[host]['mon_fqdn'] }}" {
+  host = "{{ hostvars[host]['mon_fqdn'] }}"
 }
 {% endfor %}
 
 object Zone "master" {
     endpoints = [
 {% for host in groups['mon_server'] %}
-      "{{ hostvars[host]['ansible_fqdn'] }}"{% if not loop.last %},
+      "{{ hostvars[host]['mon_fqdn'] }}"{% if not loop.last %},
 {% endif %}
 {% endfor %}
  
     ]
 }
 
-object Endpoint "{{ ansible_fqdn }}" {
-    host = "{{ ansible_fqdn }}"
+object Endpoint "{{ mon_fqdn }}" {
+    host = "{{ mon_fqdn }}"
 }
 
-object Zone "{{ ansible_fqdn }}" {
-    endpoints = [ "{{ ansible_fqdn }}" ]
+object Zone "{{ mon_fqdn }}" {
+    endpoints = [ "{{ mon_fqdn }}" ]
     parent = "master"
 }

@@ -19,10 +19,10 @@ const PluginContribDir = "/usr/lib/nagios/plugins"
 /* Our local instance name. By default this is the server's hostname as returned by `hostname --fqdn`.
  * This should be the common name from the API certificate.
  */
-const NodeName = "{{ ansible_fqdn }}"
+const NodeName = "{{ mon_fqdn }}"
 
 /* Our local zone name. */
-const ZoneName = "{{ ansible_fqdn }}"
+const ZoneName = "{{ mon_fqdn }}"
 
 /* Secret key for remote node tickets */
 // We don't use autosigning so leave this empty...

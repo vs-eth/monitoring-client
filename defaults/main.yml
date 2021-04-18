@@ -1,4 +1,6 @@
 ---
+mon_fqdn: {{ ansible_fqdn }}
+
 # Which port to listen on?
 mon_icinga_listen_port: 5665
 
