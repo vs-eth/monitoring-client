@@ -7,15 +7,15 @@ object Zone "director-global" {
 }
 
 {% for host in groups['mon_server'] %}
-  {% if hostvars[host]['mon_fqdn'] is defined %}}
+{% if hostvars[host]['mon_fqdn'] is defined %}}
 object Endpoint "{{ hostvars[host]['mon_fqdn'] }}" {
   host = "{{ hostvars[host]['mon_fqdn'] }}"
 }
-  {% else %}
+{% else %}
 object Endpoint "{{ hostvars[host]['ansible_fqdn'] }}" {
   host = "{{ hostvars[host]['ansible_fqdn'] }}"
 }
-  {% endif %}
+{% endif %}
 {% endfor %}
 
 object Zone "master" {
